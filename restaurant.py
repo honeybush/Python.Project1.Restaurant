@@ -63,20 +63,30 @@ class Menu(): #food factory-ish
 
 class Waiter(): #view
 	def __init__(self):
-		self.order = ""
+		self.order = []
 	def getOrder(self, menu):
 		n = 1
 		print "Welcome to Food Place! Here is the menu (enter the food item, not the number):"
 		for food in menu:
 			print str(n) + ". " + food
 			n += 1
-		order = raw_input("What is your order? ")
-		return order
+		r = raw_input("Dine in?(y/n)")
+		if r.lower() == "y":
+			while r.lower() == "y":
+				order = raw_input("What is your order? ")
+				amt = input("How many?")
+				temp = order.lower()+":"+str(amt)
+				self.order.append(temp)
+				r = raw_input("Order more?")
+			return self.order
+		else:
+			print "Please come any time!"
+			exit(0)
 	def giveFood(self, avai, food):
 		if avai == True:
 			print "Here is your", food + ". Enjoy your meal!"
 		else:
-			print "Sorry, the food you ordered is not available."
+			print "Sorry, the "+food+" you ordered is not available."
 
 class Chef(): #control
 	def __init__(self):
@@ -88,15 +98,24 @@ class Chef(): #control
 		self.avai = False
 		self.confirmOrder()
 	def confirmOrder(self):
+		n = 0
 		menu = self.getMenu()
 		order = self.waiter.getOrder(menu)
-		order = order.lower()
-		for food in self.foodlist:
-			if food.name == order:
-				self.avai = True
-				self.cooking(food)
-		if self.avai == False:
-			self.waiter.giveFood(self.avai, "n/a")
+		#print order
+		for o in order:
+			#print o
+			temp = str(o)
+			temp = o.split(":")
+			#print temp
+			for food in self.foodlist:
+				if food.name == temp[0]:
+					self.avai = True
+					while n < int(temp[1]):
+						self.cooking(food)
+						n += 1
+			if self.avai == False:
+				self.waiter.giveFood(self.avai, food.name)
+			n = 0
 	def getMenu(self):
 		menu = []
 		for food in self.foodlist:
@@ -106,15 +125,16 @@ class Chef(): #control
 		for ing in food.ingredients:
 			temp = ing.split(":")
 			for i in self.inglist:
+				amt_n = int(temp[1])
 				if i.name == temp[0]:
-					if i.amt >= int(temp[1]):
-						i.amt -= int(temp[1])
+					if i.amt >= amt_n:
+						i.amt -= amt_n
 					else:
 						s = "(To the Chef) Out of "+i.name+". Buy some? (y/n)"
 						r = raw_input(s)
 						if r.lower() == "y":
 							n = input("How many?")
-							while int(temp[1]) > n+i.amt:
+							while amt_n > n+i.amt:
 								if n <= 0:
 									n = input("Please input a positive number. How many?")
 								else:
@@ -123,13 +143,13 @@ class Chef(): #control
 									if r.lower() == "y":
 										n = input("How much?")
 									else:
-										self.waiter.giveFood(False, "n/a")
+										self.waiter.giveFood(False, food.name)
 										self.storage.updateList(self.inglist)
 										return
 							i.amt += n
-							i.amt -= int(temp[1])
+							i.amt -= amt_n
 						else:
-							self.waiter.giveFood(False, "n/a")
+							self.waiter.giveFood(False, food.name)
 							return
 		self.waiter.giveFood(self.avai, food.name)
 		self.storage.updateList(self.inglist)

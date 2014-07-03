@@ -1,5 +1,5 @@
-flour:5
-pineapple:5
-chicken:5
-sugar:5
-milk:5
+flour:3
+pineapple:4
+chicken:3
+sugar:6
+milk:3
