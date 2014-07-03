@@ -1,3 +1,4 @@
-bread
-pineapple juice
-fried chicken
+bread;flour:1
+pineapple juice;pineapple:1
+fried chicken;chicken:1
+ice cream;sugar:1;milk:2
